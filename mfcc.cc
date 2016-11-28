@@ -114,9 +114,14 @@ private:
     void applyLMFB(void) {
         lmfbCoef.assign(numFilters,0);
         
-        for (int i=0; i<numFilters; i++)
+        for (int i=0; i<numFilters; i++) {
+            // Multiply the filterbank matrix
             for (int j=0; j<fbank[i].size(); j++)
                 lmfbCoef[i] += fbank[i][j] * powerSpectralCoef[j];
+            // Apply Mel-flooring
+            if (lmfbCoef[i] < 1.0)
+                lmfbCoef[i] = 1.0;
+        }
         
         // Applying log on amplitude
         for (int i=0; i<numFilters; i++)
@@ -238,13 +243,13 @@ public:
         frame = prevsamples;
         for (int i=0; i<N; i++)
             frame.push_back(samples[i]);
+        prevsamples.assign(frame.begin()+frameShiftSamples, frame.end());
 
         preEmphHam();
         computePowerSpec();
         applyLMFB();
         applyDct();
 
-        prevsamples.assign(frame.begin()+frameShiftSamples, frame.end());
         return v_d_to_string (mfcc);
     }
 
