@@ -20,7 +20,7 @@
 
 #include <iostream>
 #include <fstream>
-#include "mfcc.cpp"
+#include "mfcc.cc"
 
 int main(int argc, char* argv[]) {
     // Check arguments
@@ -53,8 +53,9 @@ int main(int argc, char* argv[]) {
     // Initialise MFCC class instance
     int winLength=25, frameShift=10; // Both in milliseconds
     int fs=16000;        // Sampling frequency in Hertz
-    int numCepstra = 12; // We get log-energy extra.
-    MFCC mfccComputer (fs, numCepstra, winLength, frameShift);
+    int numCepstra = 12; // Number of cepstra, excluding log-energy
+    double lowFreq = 50.0, highFreq=6500; // Low and high cutoff frequencies for filterbank
+    MFCC mfccComputer (fs, numCepstra, winLength, frameShift, lowFreq, highFreq);
     
     // Process
     if (mfccComputer.process (wavFp, mfcFp))

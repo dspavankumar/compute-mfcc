@@ -24,7 +24,7 @@
 #include<vector>
 #include<map>
 #include<math.h>
-#include "wavHeader.h"
+#include"wavHeader.h"
 
 typedef std::vector<double> v_d;
 typedef std::complex<double> c_d;
@@ -65,14 +65,17 @@ private:
     // Cooley-Tukey DIT-FFT recursive function
     v_c_d fft(v_c_d x) {
         int N = x.size();
-        if (N==1) return x;
+        if (N==1)
+            return x;
     
         v_c_d xe(N/2,0), xo(N/2,0), Xjo, Xjo2;
         int i;
     
         // Construct arrays from even and odd indices
-        for (i=0; i<N; i+=2) xe[i/2] = x[i];
-        for (i=1; i<N; i+=2) xo[(i-1)/2] = x[i];
+        for (i=0; i<N; i+=2)
+            xe[i/2] = x[i];
+        for (i=1; i<N; i+=2)
+            xo[(i-1)/2] = x[i];
     
         // Compute N/2-point FFT
         Xjo = fft(xe);
@@ -139,8 +142,10 @@ private:
             hamming[i] = 0.54 - 0.46 * cos(2 * PI * i / (winLengthSamples-1));
 
         v_d v1(numCepstra+1,0), v2(numFilters,0);
-        for (i=0; i <= numCepstra; i++) v1[i] = i;
-        for (i=0; i < numFilters; i++) v2[i] = i + 0.5;
+        for (i=0; i <= numCepstra; i++)
+            v1[i] = i;
+        for (i=0; i < numFilters; i++)
+            v2[i] = i + 0.5;
 
         dct.reserve (numFilters*(numCepstra+1));        
         double c = sqrt(2.0/numFilters);
@@ -206,14 +211,14 @@ private:
 
 public:
     // MFCC class constructor
-    MFCC(int sampFreq=16000, int nCep=12, int winLength=25, int frameShift=10) {
+    MFCC(int sampFreq=16000, int nCep=12, int winLength=25, int frameShift=10, double lf=50, double hf=6500) {
         fs          = sampFreq;     // Sampling frequency
         numCepstra  = nCep;         // Number of cepstra
         numFFT      = 512;          // FFT size
         numFilters  = 40;           // Number of filters
         preEmphCoef = 0.97;         // Pre-emphasis coefficient
-        lowFreq     = 50;           // Filterbank low frequency cutoff in Hertz
-        highFreq    = 6500;         // Filterbank high frequency cutoff in Hertz
+        lowFreq     = lf;           // Filterbank low frequency cutoff in Hertz
+        highFreq    = hf;         // Filterbank high frequency cutoff in Hertz
         winLengthSamples   = winLength * fs / 1e3;  // winLength in milliseconds
         frameShiftSamples  = frameShift * fs / 1e3; // frameShift in milliseconds
         
