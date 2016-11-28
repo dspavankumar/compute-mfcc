@@ -237,7 +237,7 @@ public:
     }
 
     // Process each frame and extract MFCC
-    std::string processFrame(int8_t* samples, size_t N) {
+    std::string processFrame(int16_t* samples, size_t N) {
         // Add samples from the previous frame that overlap with the current frame
         // to the current samples and create the frame.
         frame = prevsamples;
@@ -261,8 +261,8 @@ public:
         wavFp.read((char *) &hdr, headerSize);
 
         // Check audio format
-        if (hdr.AudioFormat != 1) {
-            std::cerr << "Unsupported audio format, use PCM Wave" << std::endl;
+        if (hdr.AudioFormat != 1 || hdr.bitsPerSample != 16) {
+            std::cerr << "Unsupported audio format, use 16 bit PCM Wave" << std::endl;
             return 1;
         }
         // Check sampling rate
@@ -271,25 +271,26 @@ public:
             return 1;
         }
         
-        // Read initial samples
-        uint16_t BUFFER_SIZE = winLengthSamples-frameShiftSamples;
-        int8_t* buffer = new int8_t[BUFFER_SIZE];
-        wavFp.read((char *) buffer, BUFFER_SIZE);
+        // Initialise buffer
+        uint16_t bufferLength = winLengthSamples-frameShiftSamples;
+        int16_t* buffer = new int16_t[bufferLength];
+        int bufferBPS = (sizeof buffer[0]);
 
-        // Set the initial samples        
-        for (int i=0; i<BUFFER_SIZE/(sizeof buffer[0]); i++)
+        // Read and set the initial samples        
+        wavFp.read((char *) buffer, bufferLength*bufferBPS);
+        for (int i=0; i<bufferLength; i++)
             prevsamples[i] = buffer[i];        
         delete [] buffer;
         
         // Recalculate buffer size
-        BUFFER_SIZE = frameShiftSamples;
-        buffer = new int8_t[BUFFER_SIZE];
+        bufferLength = frameShiftSamples;
+        buffer = new int16_t[bufferLength];
         
         // Read data and process each frame
-        wavFp.read((char *) buffer, BUFFER_SIZE);
-        while (wavFp.gcount() == BUFFER_SIZE && !wavFp.eof()) {
-            mfcFp << processFrame(buffer, BUFFER_SIZE/(sizeof buffer[0]));
-            wavFp.read((char *) buffer, BUFFER_SIZE);
+        wavFp.read((char *) buffer, bufferLength*bufferBPS);
+        while (wavFp.gcount() == bufferLength*bufferBPS && !wavFp.eof()) {
+            mfcFp << processFrame(buffer, bufferLength);
+            wavFp.read((char *) buffer, bufferLength*bufferBPS);
         }
         delete [] buffer;
         buffer = nullptr;
