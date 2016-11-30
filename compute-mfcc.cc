@@ -102,6 +102,7 @@ int main(int argc, char* argv[]) {
     USAGE += "--inputlist       : List of input Wave files\n";
     USAGE += "--outputlist      : List of output MFCC CSV files\n";
     USAGE += "--numcepstra      : Number of output cepstra, excluding log-energy (default=12)\n";
+    USAGE += "--numfilters      : Number of Mel warped filters in filterbank (default=40)\n";
     USAGE += "--samplingrate    : Sampling rate in Hertz (default=16000)\n";
     USAGE += "--winlength       : Length of analysis window in milliseconds (default=25)\n";
     USAGE += "--frameshift      : Frame shift in milliseconds (default=10)\n";
@@ -113,16 +114,17 @@ int main(int argc, char* argv[]) {
     USAGE += "compute-mfcc --inputlist input.list --outputlist output.list\n";
     USAGE += "compute-mfcc --inputlist input.list --outputlist output.list --numcepstra 17 --samplingrate 44100\n";
 
-	char *wavPath = getCmdOption(argv, argv+argc, "--input");
-	char *mfcPath = getCmdOption(argv, argv+argc, "--output");
-	char *wavListPath = getCmdOption(argv, argv+argc, "--inputlist");
-	char *mfcListPath = getCmdOption(argv, argv+argc, "--outputlist");
-	char *numCepstraC = getCmdOption(argv, argv+argc, "--numcepstra");
-	char *samplingRateC = getCmdOption(argv, argv+argc, "--samplingrate");
-	char *winLengthC = getCmdOption(argv, argv+argc, "--winlength");
-	char *frameShiftC = getCmdOption(argv, argv+argc, "--frameshift");
-	char *lowFreqC = getCmdOption(argv, argv+argc, "--lowfreq");
-	char *highFreqC = getCmdOption(argv, argv+argc, "--highfreq");
+    char *wavPath = getCmdOption(argv, argv+argc, "--input");
+    char *mfcPath = getCmdOption(argv, argv+argc, "--output");
+    char *wavListPath = getCmdOption(argv, argv+argc, "--inputlist");
+    char *mfcListPath = getCmdOption(argv, argv+argc, "--outputlist");
+    char *numCepstraC = getCmdOption(argv, argv+argc, "--numcepstra");
+    char *numFiltersC = getCmdOption(argv, argv+argc, "--numfilters");
+    char *samplingRateC = getCmdOption(argv, argv+argc, "--samplingrate");
+    char *winLengthC = getCmdOption(argv, argv+argc, "--winlength");
+    char *frameShiftC = getCmdOption(argv, argv+argc, "--frameshift");
+    char *lowFreqC = getCmdOption(argv, argv+argc, "--lowfreq");
+    char *highFreqC = getCmdOption(argv, argv+argc, "--highfreq");
 
     // Check arguments
     if ((argc<3) || (!(wavPath && mfcPath) && !(wavListPath && mfcListPath))) {
@@ -132,6 +134,7 @@ int main(int argc, char* argv[]) {
     
     // Assign variables
     int numCepstra = (numCepstraC ? atoi(numCepstraC) : 12);
+    int numFilters = (numFiltersC ? atoi(numFiltersC) : 40);
     int samplingRate = (samplingRateC ? atoi(samplingRateC) : 16000);
     int winLength = (winLengthC ? atoi(winLengthC) : 25);
     int frameShift = (frameShiftC ? atoi(frameShiftC) : 10);
@@ -139,7 +142,7 @@ int main(int argc, char* argv[]) {
     int highFreq = (highFreqC ? atoi(highFreqC) : samplingRate/2);
 
     // Initialise MFCC class instance
-    MFCC mfccComputer (samplingRate, numCepstra, winLength, frameShift, lowFreq, highFreq);
+    MFCC mfccComputer (samplingRate, numCepstra, winLength, frameShift, numFilters, lowFreq, highFreq);
 
     // Process wav files
     if (wavPath && mfcPath)
