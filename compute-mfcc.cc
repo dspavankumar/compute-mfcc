@@ -84,13 +84,17 @@ int processList (MFCC &mfccComputer, const char* wavListPath, const char* mfcLis
     while (true) {
         std::getline (wavListFp, wavPath);
         std::getline (mfcListFp, mfcPath);
-        if (wavPath.empty() || mfcPath.empty())
+        if (wavPath.empty() || mfcPath.empty()) {
+            wavListFp.close();
+            mfcListFp.close();
             return 0;
-        if (processFile (mfccComputer, wavPath.c_str(), mfcPath.c_str()))
+        }
+        if (processFile (mfccComputer, wavPath.c_str(), mfcPath.c_str())) {
+            wavListFp.close();
+            mfcListFp.close();
             return 1;
+        }
     }
-
-    return 0;
 }
 
 // Main
