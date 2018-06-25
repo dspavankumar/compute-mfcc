@@ -217,13 +217,13 @@ private:
 public:
     // MFCC class constructor
     MFCC(int sampFreq=16000, int nCep=12, int winLength=25, int frameShift=10, int numFilt=40, double lf=50, double hf=6500) {
-        fs          = sampFreq;     // Sampling frequency
-        numCepstra  = nCep;         // Number of cepstra
-        numFFT      = 512;          // FFT size
-        numFilters  = numFilt;      // Number of Mel warped filters
-        preEmphCoef = 0.97;         // Pre-emphasis coefficient
-        lowFreq     = lf;           // Filterbank low frequency cutoff in Hertz
-        highFreq    = hf;         // Filterbank high frequency cutoff in Hertz
+        fs          = sampFreq;             // Sampling frequency
+        numCepstra  = nCep;                 // Number of cepstra
+        numFilters  = numFilt;              // Number of Mel warped filters
+        preEmphCoef = 0.97;                 // Pre-emphasis coefficient
+        lowFreq     = lf;                   // Filterbank low frequency cutoff in Hertz
+        highFreq    = hf;                   // Filterbank high frequency cutoff in Hertz
+        numFFT      = fs<=20000?512:2048;   // FFT size
         winLengthSamples   = winLength * fs / 1e3;  // winLength in milliseconds
         frameShiftSamples  = frameShift * fs / 1e3; // frameShift in milliseconds
         
