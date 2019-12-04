@@ -270,6 +270,13 @@ public:
             std::cerr << "Sampling rate mismatch: Found " << hdr.SamplesPerSec << " instead of " << fs <<std::endl;
             return 1;
         }
+
+        // Check sampling rate
+        if (hdr.NumOfChan != 1) {
+            std::cerr << hdr.NumOfChan << " channel files are unsupported. Use mono." <<std::endl;
+            return 1;
+        }
+
         
         // Initialise buffer
         uint16_t bufferLength = winLengthSamples-frameShiftSamples;
